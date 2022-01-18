@@ -1,0 +1,9 @@
+.header__auth {
+  padding-top: 6px;
+  margin: 0;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 1.2;
+  cursor: pointer;
+}

@@ -8,9 +8,14 @@ import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import DeletePlacePopup from "./DeletePlacePopup";
+import Login from "./Login";
+import Register from "./Register";
+import ProtectedRoute from "./ProtectedRoute";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { Route, Switch, Redirect, withRouter } from "react-router";
 
 function App() {
+  let loggedIn = false;
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
     React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
@@ -151,46 +156,64 @@ function App() {
   return (
     <div className="page">
       <CurrentUserContext.Provider value={currentUser}>
-        <Header />
-        <Main
-          onEditProfile={handleEditProfileClick}
-          onAddPlace={handleAddPlaceClick}
-          onEditAvatar={handleEditAvatarClick}
-          onCard={handleCardClick}
-          cards={cards}
-          onCardLike={handleCardLike}
-          onCardDeleteClick={handleDeleteCard}
-        />
-        <Footer />
-        <EditProfilePopup
-          isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups}
-          onUpdateUser={handleUpdateUser}
-          isLoading={isLoading}
-        />
-        <DeletePlacePopup
-          isOpen={isDeletePlacePopup}
-          onClose={closeAllPopups}
-          onDeletePlace={handleCardDelete}
-          cardId={cardIdForRemove}
-          isLoading={isLoading}
-        />
-        <AddPlacePopup
-          isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}
-          onAddPlace={handleAddPlaceSubmit}
-          isLoading={isLoading}
-        />
-        <EditAvatarPopup
-          isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups}
-          onUpdateAvatar={handleUpdateAvatar}
-          isLoading={isLoading}
-        />
-        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+          <Header />
+          <EditProfilePopup
+            isOpen={isEditProfilePopupOpen}
+            onClose={closeAllPopups}
+            onUpdateUser={handleUpdateUser}
+            isLoading={isLoading}
+          />
+          <DeletePlacePopup
+            isOpen={isDeletePlacePopup}
+            onClose={closeAllPopups}
+            onDeletePlace={handleCardDelete}
+            cardId={cardIdForRemove}
+            isLoading={isLoading}
+          />
+          <AddPlacePopup
+            isOpen={isAddPlacePopupOpen}
+            onClose={closeAllPopups}
+            onAddPlace={handleAddPlaceSubmit}
+            isLoading={isLoading}
+          />
+          <EditAvatarPopup
+            isOpen={isEditAvatarPopupOpen}
+            onClose={closeAllPopups}
+            onUpdateAvatar={handleUpdateAvatar}
+            isLoading={isLoading}
+          />
+          <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+          <Switch>
+            <Route path="/sign-in">
+              <Login />
+            </Route>
+            <Route path="/sign-up">
+              <Register />
+            </Route>
+            <ProtectedRoute
+              path="/"
+              loggedIn={loggedIn}
+              onEditProfile={handleEditProfileClick}
+              onAddPlace={handleAddPlaceClick}
+              onEditAvatar={handleEditAvatarClick}
+              onCard={handleCardClick}
+              cards={cards}
+              onCardLike={handleCardLike}
+              onCardDeleteClick={handleDeleteCard}
+              component={Main}
+            />
+            {/* <ProtectedRoute
+            path="/"
+            loggedIn={loggedIn}
+            component={Footer}
+          /> */}
+            <Route exact path="/">
+              {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+            </Route>
+          </Switch>
       </CurrentUserContext.Provider>
     </div>
   );
 }
 
-export default App;
+export default withRouter(App);
