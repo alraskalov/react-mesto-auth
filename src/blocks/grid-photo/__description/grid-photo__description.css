@@ -1,0 +1,6 @@
+.grid-photo__description {
+  padding: 22px 22px 21px 21px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

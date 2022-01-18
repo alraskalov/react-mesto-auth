@@ -1,0 +1,9 @@
+.grid-photo__like {
+  border: none;
+  cursor: pointer;
+  min-width: 21px;
+  height: 19px;
+  background: url("../../../images/like.svg") no-repeat 50% / contain #fff;
+}
+
+

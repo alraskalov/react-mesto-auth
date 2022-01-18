@@ -1,0 +1,16 @@
+.page__grid-photo {
+  margin: 50px auto 0;
+}
+
+@media screen and (max-width: 910px) {
+  .page__grid-photo {
+    margin-left: 19px;
+    margin-right: 19px;
+  }
+}
+
+@media screen and (max-width: 710px) {
+  .page__grid-photo {
+    margin-top: 36px;
+  }
+}
