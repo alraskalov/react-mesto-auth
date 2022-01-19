@@ -1,0 +1,7 @@
+.popup__wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 26px 46px 23px;
+}

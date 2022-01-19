@@ -11,6 +11,7 @@ import DeletePlacePopup from "./DeletePlacePopup";
 import Login from "./Login";
 import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
+import InfoTooltip from "./InfoTooltip";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import { Route, Switch, Redirect, withRouter } from "react-router";
 
@@ -183,6 +184,7 @@ function App() {
             isLoading={isLoading}
           />
           <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+          <InfoTooltip />
           <Switch>
             <Route path="/sign-in">
               <Login />
