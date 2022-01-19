@@ -1,11 +1,10 @@
 import React from "react";
 import { withRouter } from "react-router-dom"
+import FormWithAuth from "./FormWithAuth";
 
 function Register(props) {
   return (
-    <div className="register">
-
-    </div>
+    <FormWithAuth name="register" title="Регистрация" buttonText="Зарегистрироваться" />
   );
 }
 
