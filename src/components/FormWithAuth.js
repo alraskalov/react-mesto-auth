@@ -5,7 +5,7 @@ function FormWithAuth(props) {
   return (
     <div className="auth page__auth">
       <p className="auth__title">{props.title}</p>
-      <form name={`${props.name}`} className="auth__form">
+      <form onSubmit={props.onSubmit} name={`${props.name}`} className="auth__form">
         <fieldset className="auth__fieldset">
           <div className="auth__container">
             <label className="auth__label">
@@ -15,6 +15,8 @@ function FormWithAuth(props) {
                 type="email"
                 name="email"
                 placeholder="Email"
+                onChange={props.onChange}
+                value={props.email}
                 required
               />
             </label>
@@ -25,6 +27,8 @@ function FormWithAuth(props) {
                 type="password"
                 name="password"
                 placeholder="Пароль"
+                onChange={props.onChange}
+                value={props.password}
                 required
               />
             </label>
