@@ -1,5 +1,5 @@
 import React from "react";
-import Footer from "./Footer";
+// import Footer from "./Footer";
 import Header from "./Header";
 import Main from "./Main";
 import api from "../utils/Api";
@@ -13,9 +13,9 @@ import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
 import InfoTooltip from "./InfoTooltip";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import { Route, Switch, Redirect, withRouter } from "react-router";
+import { Route, Routes, Navigate } from "react-router";
 
-function App() {
+export default function App() {
   let loggedIn = false;
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
     React.useState(false);
@@ -157,65 +157,60 @@ function App() {
   return (
     <div className="page">
       <CurrentUserContext.Provider value={currentUser}>
-          <Header />
-          <EditProfilePopup
-            isOpen={isEditProfilePopupOpen}
-            onClose={closeAllPopups}
-            onUpdateUser={handleUpdateUser}
-            isLoading={isLoading}
-          />
-          <DeletePlacePopup
-            isOpen={isDeletePlacePopup}
-            onClose={closeAllPopups}
-            onDeletePlace={handleCardDelete}
-            cardId={cardIdForRemove}
-            isLoading={isLoading}
-          />
-          <AddPlacePopup
-            isOpen={isAddPlacePopupOpen}
-            onClose={closeAllPopups}
-            onAddPlace={handleAddPlaceSubmit}
-            isLoading={isLoading}
-          />
-          <EditAvatarPopup
-            isOpen={isEditAvatarPopupOpen}
-            onClose={closeAllPopups}
-            onUpdateAvatar={handleUpdateAvatar}
-            isLoading={isLoading}
-          />
-          <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-          <InfoTooltip />
-          <Switch>
-            <Route path="/sign-in">
-              <Login />
-            </Route>
-            <Route path="/sign-up">
-              <Register />
-            </Route>
-            <ProtectedRoute
-              path="/"
-              loggedIn={loggedIn}
-              onEditProfile={handleEditProfileClick}
-              onAddPlace={handleAddPlaceClick}
-              onEditAvatar={handleEditAvatarClick}
-              onCard={handleCardClick}
-              cards={cards}
-              onCardLike={handleCardLike}
-              onCardDeleteClick={handleDeleteCard}
-              component={Main}
-            />
-            {/* <ProtectedRoute
+        <Header />
+        <EditProfilePopup
+          isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPopups}
+          onUpdateUser={handleUpdateUser}
+          isLoading={isLoading}
+        />
+        <DeletePlacePopup
+          isOpen={isDeletePlacePopup}
+          onClose={closeAllPopups}
+          onDeletePlace={handleCardDelete}
+          cardId={cardIdForRemove}
+          isLoading={isLoading}
+        />
+        <AddPlacePopup
+          isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPopups}
+          onAddPlace={handleAddPlaceSubmit}
+          isLoading={isLoading}
+        />
+        <EditAvatarPopup
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
+          onUpdateAvatar={handleUpdateAvatar}
+          isLoading={isLoading}
+        />
+        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+        <InfoTooltip />
+        <Routes>
+          <Route path="/sign-in" element={<Login />} />
+          <Route path="/sign-up" element={<Register />} />
+          <Route
             path="/"
-            loggedIn={loggedIn}
-            component={Footer}
-          /> */}
-            <Route exact path="/">
-              {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
-            </Route>
-          </Switch>
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <Main
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onEditAvatar={handleEditAvatarClick}
+                  onCard={handleCardClick}
+                  cards={cards}
+                  onCardLike={handleCardLike}
+                  onCardDeleteClick={handleDeleteCard}
+                />
+              </ProtectedRoute>
+            }
+          />
+          <Route exact path="/" element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <Navigate to="/" />
+            </ProtectedRoute>
+          } />
+        </Routes>
       </CurrentUserContext.Provider>
     </div>
   );
 }
-
-export default withRouter(App);

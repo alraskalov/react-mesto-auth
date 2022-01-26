@@ -1,5 +1,4 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
 import FormWithAuth from "./FormWithAuth";
 
 function Login(props) {
@@ -8,4 +7,4 @@ function Login(props) {
   );
 }
 
-export default withRouter(Login);
+export default Login;

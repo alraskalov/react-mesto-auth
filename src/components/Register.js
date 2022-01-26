@@ -1,5 +1,4 @@
 import React from "react";
-import { withRouter } from "react-router-dom"
 import FormWithAuth from "./FormWithAuth";
 
 function Register(props) {
@@ -8,4 +7,4 @@ function Register(props) {
   );
 }
 
-export default withRouter(Register);
+export default Register;

@@ -1,6 +1,6 @@
 import fail from "../images/fail.svg";
 
-function InfoTooltip(props) {
+export default function InfoTooltip(props) {
   return (
     <div className={`popup popup-auth ${props.isOpen ? "popup_opened" : ""}`}>
       <div className="popup__container">
@@ -19,5 +19,3 @@ function InfoTooltip(props) {
     </div>
   );
 }
-
-export default InfoTooltip;
