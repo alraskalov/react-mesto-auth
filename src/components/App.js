@@ -13,10 +13,19 @@ import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
 import InfoTooltip from "./InfoTooltip";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import { Route, Routes, Navigate } from "react-router";
+import {
+  Route,
+  Routes,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from "react-router";
 
 export default function App() {
-  let loggedIn = false;
+  const [loggedIn, setLoggedIn] = React.useState(false);
+  const navigate = useNavigate();
+  let location = useLocation();
+
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
     React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
@@ -157,7 +166,7 @@ export default function App() {
   return (
     <div className="page">
       <CurrentUserContext.Provider value={currentUser}>
-        <Header />
+        <Header location={location.pathname} />
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
@@ -204,11 +213,15 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route exact path="/" element={
-            <ProtectedRoute loggedIn={loggedIn}>
-              <Navigate to="/" />
-            </ProtectedRoute>
-          } />
+          <Route
+            exact
+            path="/"
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <Navigate to="/" />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </CurrentUserContext.Provider>
     </div>
