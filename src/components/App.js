@@ -259,7 +259,7 @@ export default function App() {
           />
           <Route
             path="/sign-up"
-            element={<Register onServerStatus={handleServerStatus} onInfoTooltip={handleInfoTooltip} />}
+            element={<Register onServerStatus={handleServerStatus} onInfoTooltip={handleInfoTooltip} onCloseTooltip={closeAllPopups} />}
           />
           <Route
             path="/"

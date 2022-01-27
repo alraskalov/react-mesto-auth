@@ -27,7 +27,9 @@ function Register(props) {
         if (res.data) {
           props.onInfoTooltip();
           props.onServerStatus(true);
-          navigate("/sign-in");
+          setValues({ email: "", password: "" });
+          setTimeout(navigate, 3000, "/sign-in");
+          setTimeout(props.onCloseTooltip, 3000);
         }
       })
       .catch((err) => {
