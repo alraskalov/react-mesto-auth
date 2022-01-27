@@ -1,5 +1,5 @@
 import React from "react";
-// import Footer from "./Footer";
+import Footer from "./Footer";
 import Header from "./Header";
 import Main from "./Main";
 import api from "../utils/Api";
@@ -20,12 +20,16 @@ import {
   useNavigate,
   useLocation,
 } from "react-router";
+import * as auth from "../auth.js";
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = React.useState(false);
   const navigate = useNavigate();
   let location = useLocation();
+  const [loggedIn, setLoggedIn] = React.useState(false);
+  const [userEmail, setUserEmail] = React.useState("");
+  const [serverStatus, setServerStatus] = React.useState("");
 
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
     React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
@@ -41,6 +45,7 @@ export default function App() {
 
   const [cards, setCards] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
+
   React.useEffect(() => {
     api
       .getUserInfo()
@@ -154,6 +159,47 @@ export default function App() {
     setIsDeletePlacePopup(true);
   }
 
+  function handleInfoTooltip() {
+    setIsInfoTooltipOpen(true);
+  }
+
+  function handleServerStatus(status) {
+    setServerStatus(status);
+  }
+
+  function handleLogin() {
+    setLoggedIn(true);
+    handleTokenCheck();
+  }
+
+  function handleLogout(e) {
+    e.preventDefault();
+    localStorage.removeItem("jwt");
+    setLoggedIn(false);
+  }
+
+  function handleTokenCheck() {
+    if (localStorage.getItem("jwt")) {
+      const jwt = localStorage.getItem("jwt");
+      auth
+        .checkToken(jwt)
+        .then((res) => {
+          if (res) {
+            setUserEmail(res.data.email);
+            setLoggedIn(true);
+            navigate("/");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }
+
+  React.useEffect(() => {
+    handleTokenCheck();
+  }, []);
+
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
@@ -161,12 +207,18 @@ export default function App() {
     setIsDeletePlacePopup(false);
     setSelectedCard({ name: "", link: "" });
     setСardIdForRemove("");
+    setIsInfoTooltipOpen(false);
   }
 
   return (
     <div className="page">
       <CurrentUserContext.Provider value={currentUser}>
-        <Header location={location.pathname} />
+        <Header
+          location={location.pathname}
+          email={userEmail}
+          loggedIn={loggedIn}
+          onLogout={handleLogout}
+        />
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
@@ -193,10 +245,22 @@ export default function App() {
           isLoading={isLoading}
         />
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-        <InfoTooltip />
+        <InfoTooltip isOpen={isInfoTooltipOpen} serverStatus={serverStatus} onClose={closeAllPopups} />
         <Routes>
-          <Route path="/sign-in" element={<Login />} />
-          <Route path="/sign-up" element={<Register />} />
+          <Route
+            path="/sign-in"
+            element={
+              <Login
+                onLogin={handleLogin}
+                onServerStatus={handleServerStatus}
+                onInfoTooltip={handleInfoTooltip}
+              />
+            }
+          />
+          <Route
+            path="/sign-up"
+            element={<Register onServerStatus={handleServerStatus} onInfoTooltip={handleInfoTooltip} />}
+          />
           <Route
             path="/"
             element={
@@ -223,6 +287,7 @@ export default function App() {
             }
           />
         </Routes>
+        {loggedIn && <Footer />}
       </CurrentUserContext.Provider>
     </div>
   );

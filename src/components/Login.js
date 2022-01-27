@@ -24,15 +24,22 @@ function Login(props) {
     if (!values.email || !values.password) {
       return;
     }
-    auth.authorize(values.email, values.password)
-    .then((res) => {
-      if (res.jwt) {
-        setValues({ email: "", password: "" });
-        props.onLogin();
-        localStorage.setItem("jwt", res.jwt);
-        navigate("/");
-      }
-    });
+    auth
+      .authorize(values.email, values.password)
+      .then((res) => {
+        if (res.token) {
+          setValues({ email: "", password: "" });
+          props.onLogin();
+          localStorage.setItem("jwt", res.token);
+          navigate("/");
+        } else {
+          props.onInfoTooltip();
+          props.onServerStatus(false);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   return (

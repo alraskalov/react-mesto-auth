@@ -35,7 +35,7 @@ function FormWithAuth(props) {
             <button type="submit" className="auth__submit-btn">
               {props.buttonText}
             </button>
-            {props.name === "register" && <Link to="sign-in" className="auth__link">Уже зарегистрированы? Войти</Link>}
+            {props.name === "register" ? <Link to="/sign-in" className="auth__link">Уже зарегистрированы? Войти</Link> : null}
           </div>
         </fieldset>
       </form>
