@@ -22,10 +22,8 @@ export default function AddPlacePopup(props) {
         link: cardImageLink,
       },
       () => {
-        return Promise.resolve().then(() => {
-          setCardName("");
-          setCardImageLink("");
-        });
+        setCardName("");
+        setCardImageLink("");
       }
     );
   }

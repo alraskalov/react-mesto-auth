@@ -12,11 +12,7 @@ export default function EditAvatarPopup(props) {
       {
         avatar: inputAvatarElement.value,
       },
-      () => {
-        return Promise.resolve().then(() => {
-          e.target.reset();
-        });
-      }
+      () => e.target.reset()
     );
   }
 

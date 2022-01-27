@@ -1,15 +1,11 @@
 import React from "react";
 import FormWithAuth from "./FormWithAuth";
-import { useNavigate } from "react-router-dom";
-import * as auth from "../auth.js";
 
 function Login(props) {
   const [values, setValues] = React.useState({
     email: "",
     password: "",
   });
-
-  const navigate = useNavigate();
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -24,22 +20,15 @@ function Login(props) {
     if (!values.email || !values.password) {
       return;
     }
-    auth
-      .authorize(values.email, values.password)
-      .then((res) => {
-        if (res.token) {
-          setValues({ email: "", password: "" });
-          props.onLogin();
-          localStorage.setItem("jwt", res.token);
-          navigate("/");
-        } else {
-          props.onInfoTooltip();
-          props.onServerStatus(false);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    props.onLoginSubmit(
+      {
+        password: values.password,
+        email: values.email,
+      },
+      () => {
+        setValues({ email: "", password: "" });
+      }
+    );
   }
 
   return (

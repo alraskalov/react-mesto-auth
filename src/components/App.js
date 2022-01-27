@@ -20,11 +20,11 @@ import {
   useNavigate,
   useLocation,
 } from "react-router";
-import * as auth from "../auth.js";
+import auth from "../utils/Auth";
 
 export default function App() {
   const navigate = useNavigate();
-  let location = useLocation();
+  const location = useLocation();
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [userEmail, setUserEmail] = React.useState("");
   const [serverStatus, setServerStatus] = React.useState("");
@@ -169,7 +169,6 @@ export default function App() {
 
   function handleLogin() {
     setLoggedIn(true);
-    handleTokenCheck();
   }
 
   function handleLogout(e) {
@@ -178,7 +177,7 @@ export default function App() {
     setLoggedIn(false);
   }
 
-  function handleTokenCheck() {
+  const handleTokenCheck = React.useCallback(() => {
     if (localStorage.getItem("jwt")) {
       const jwt = localStorage.getItem("jwt");
       auth
@@ -194,11 +193,50 @@ export default function App() {
           console.log(err);
         });
     }
-  }
+  }, [navigate]);
 
   React.useEffect(() => {
     handleTokenCheck();
-  }, []);
+  }, [handleTokenCheck]);
+
+  function handleRegisterSubmit({ password, email }, callbackSetValues) {
+    auth
+      .register(password, email)
+      .then((res) => {
+        if (res) {
+          callbackSetValues();
+          handleServerStatus(true);
+          setTimeout(navigate, 3000, "/sign-in");
+          setTimeout(closeAllPopups, 3000);
+        }
+      })
+      .catch((err) => {
+        handleServerStatus(false);
+        console.log(err);
+      })
+      .finally(() => {
+        handleInfoTooltip();
+      });
+  }
+
+  function handleLoginSubmit({ password, email }, callbackSetValues) {
+    auth
+      .authorize(email, password)
+      .then((res) => {
+        if (res.token) {
+          callbackSetValues();
+          handleLogin();
+          localStorage.setItem("jwt", res.token);
+          navigate("/");
+        } else {
+          handleInfoTooltip();
+        }
+      })
+      .catch((err) => {
+        handleServerStatus(false);
+        console.log(err);
+      });
+  }
 
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
@@ -209,6 +247,18 @@ export default function App() {
     setСardIdForRemove("");
     setIsInfoTooltipOpen(false);
   }
+
+  React.useEffect(() => {
+    const closeByEscape = (e) => {
+      if (e.key === "Escape") {
+        closeAllPopups();
+      }
+    };
+
+    document.addEventListener("keydown", closeByEscape);
+
+    return () => document.removeEventListener("keydown", closeByEscape);
+  }, []);
 
   return (
     <div className="page">
@@ -245,21 +295,19 @@ export default function App() {
           isLoading={isLoading}
         />
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-        <InfoTooltip isOpen={isInfoTooltipOpen} serverStatus={serverStatus} onClose={closeAllPopups} />
+        <InfoTooltip
+          isOpen={isInfoTooltipOpen}
+          serverStatus={serverStatus}
+          onClose={closeAllPopups}
+        />
         <Routes>
           <Route
             path="/sign-in"
-            element={
-              <Login
-                onLogin={handleLogin}
-                onServerStatus={handleServerStatus}
-                onInfoTooltip={handleInfoTooltip}
-              />
-            }
+            element={<Login onLoginSubmit={handleLoginSubmit} />}
           />
           <Route
             path="/sign-up"
-            element={<Register onServerStatus={handleServerStatus} onInfoTooltip={handleInfoTooltip} onCloseTooltip={closeAllPopups} />}
+            element={<Register onRegisterSubmit={handleRegisterSubmit} />}
           />
           <Route
             path="/"
