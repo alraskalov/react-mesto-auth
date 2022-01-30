@@ -4,33 +4,29 @@ const Popup = ({ isOpen, name, onClose, children }) => {
   useEffect(() => {
     if (!isOpen) return;
     const closeByEscape = (e) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         onClose();
       }
-    }
+    };
 
-    document.addEventListener('keydown', closeByEscape)
-    return () => document.removeEventListener('keydown', closeByEscape)
-}, [isOpen, onClose])
+    document.addEventListener("keydown", closeByEscape);
+    return () => document.removeEventListener("keydown", closeByEscape);
+  }, [isOpen, onClose]);
 
   const handleOverlay = (e) => {
     if (e.target === e.currentTarget) {
-        onClose();
+      onClose();
     }
-  }
+  };
 
   return (
     <div
       className={`popup ${isOpen ? "popup_opened" : ""} popup_type_${name}`}
       onClick={handleOverlay}
     >
-      <div className='popup__container'>
+      <div className={`popup__container ${name === "image" ? "popup__container-image" : ""}`}>
         {children}
-        <button
-          className='popup__close-btn'
-          type='button'
-          onClick={onClose}
-        />
+        <button className="popup__close-btn" type="button" onClick={onClose} />
       </div>
     </div>
   );

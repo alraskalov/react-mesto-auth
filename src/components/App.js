@@ -248,18 +248,6 @@ export default function App() {
     setIsInfoTooltipOpen(false);
   }
 
-  React.useEffect(() => {
-    const closeByEscape = (e) => {
-      if (e.key === "Escape") {
-        closeAllPopups();
-      }
-    };
-
-    document.addEventListener("keydown", closeByEscape);
-
-    return () => document.removeEventListener("keydown", closeByEscape);
-  }, []);
-
   return (
     <div className="page">
       <CurrentUserContext.Provider value={currentUser}>
