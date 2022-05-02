@@ -10,7 +10,7 @@ class Auth {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ password, email }),
+      body: JSON.stringify({ email, password }),
     })
       .then((response) => this._getResponse(response))
       .then((res) => res);
@@ -23,7 +23,7 @@ class Auth {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ password, email }),
+      body: JSON.stringify({ email, password }),
     }).then((response) => this._getResponse(response));
   }
 
@@ -49,7 +49,7 @@ class Auth {
 }
 
 const auth = new Auth({
-  baseUrl: "https://auth.nomoreparties.co",
+  baseUrl: "https://api-mesto.herokuapp.com",
 });
 
 export default auth;

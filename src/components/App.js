@@ -45,30 +45,12 @@ export default function App() {
 
   const [cards, setCards] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
-
-  React.useEffect(() => {
-    api
-      .getUserInfo()
-      .then((userDataResponse) => {
-        setCurrentUser(userDataResponse);
-        api
-          .getInitialCards()
-          .then((data) => {
-            setCards(data);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+  const jwt = localStorage.getItem("jwt");
 
   function handleCardLike(card) {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+    const isLiked = card.likes.some((i) => i === currentUser._id);
     api
-      .changeLikeCard(card._id, isLiked)
+      .changeLikeCard(card, isLiked, jwt)
       .then((newCard) => {
         setCards((state) =>
           state.map((c) => (c._id === card._id ? newCard : c))
@@ -82,7 +64,7 @@ export default function App() {
   function handleCardDelete(cardId) {
     setIsLoading(true);
     api
-      .deleteCard(cardId)
+      .deleteCard(cardId, jwt)
       .then(() => {
         setCards((state) => state.filter((c) => c._id !== cardId));
         closeAllPopups();
@@ -96,7 +78,7 @@ export default function App() {
   function handleUpdateUser({ name, about }) {
     setIsLoading(true);
     api
-      .setUserInfo(name, about)
+      .setUserInfo(name, about, jwt)
       .then((userData) => {
         setCurrentUser(userData);
         closeAllPopups();
@@ -110,7 +92,7 @@ export default function App() {
   function handleUpdateAvatar({ avatar }, callbackPromise) {
     setIsLoading(true);
     api
-      .setUserAvatar(avatar)
+      .setUserAvatar(avatar, jwt)
       .then((userAvatar) => {
         setCurrentUser(userAvatar);
         closeAllPopups();
@@ -124,9 +106,8 @@ export default function App() {
 
   function handleAddPlaceSubmit({ name, link }, callbackPromise) {
     setIsLoading(true);
-
     api
-      .addCard(name, link)
+      .addCard(name, link, jwt)
       .then((newCard) => {
         setCards([newCard, ...cards]);
         closeAllPopups();
@@ -180,18 +161,22 @@ export default function App() {
   const handleTokenCheck = React.useCallback(() => {
     if (localStorage.getItem("jwt")) {
       const jwt = localStorage.getItem("jwt");
-      auth
-        .checkToken(jwt)
-        .then((res) => {
-          if (res) {
-            setUserEmail(res.data.email);
-            setLoggedIn(true);
-            navigate("/");
-          }
+      Promise.all(
+        [auth.checkToken(jwt),
+        api.getUserInfo(jwt),
+        api.getInitialCards(jwt)]
+      )
+        .then(([res, userData, cards]) => {
+          setCurrentUser(userData);
+
+          setCards(cards);
+          setUserEmail(res.email);
+          setLoggedIn(true);
         })
         .catch((err) => {
           console.log(err);
-        });
+        })
+        .finally(() => navigate("/"));
     }
   }, [navigate]);
 
@@ -283,11 +268,13 @@ export default function App() {
           isLoading={isLoading}
         />
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-        <InfoTooltip
-          isOpen={isInfoTooltipOpen}
-          serverStatus={serverStatus}
-          onClose={closeAllPopups}
-        />
+        {serverStatus && (
+          <InfoTooltip
+            isOpen={isInfoTooltipOpen}
+            serverStatus={serverStatus}
+            onClose={closeAllPopups}
+          />
+        )}
         <Routes>
           <Route
             path="/sign-in"
